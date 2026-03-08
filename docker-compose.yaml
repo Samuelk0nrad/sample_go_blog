@@ -46,17 +46,60 @@ services:
     networks:
       - internal
 
+
   backend:
     build:
       context: ./backend/
       dockerfile: Dockerfile
     container_name: blog_backend
+    command: >
+      sh -c "
+        update-ca-certificates &&
+        /go/bin/air
+      "
     volumes:
       - ./backend/:/app
+      - /home/samuel/.local/share/mkcert/:/usr/local/share/ca-certificates
     ports:
       - "8080:8080"
     networks:
       - internal
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+      start_period: 15s
+
+  #################
+  ####  Proxy  ####
+  #################
+  proxy:
+    image: nginx:latest
+    restart: unless-stopped
+    networks:
+      internal:
+        aliases:
+          - blog.moorph.local
+          - file.moorph.local
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./proxy-config/default.conf:/etc/nginx/conf.d/default.conf
+      - ./proxy-config/cert:/certs:ro
+      - ./proxy-config/not-found.html:/var/www/html/not-found.html:ro
+      - ./proxy-config/50x.html:/var/www/html/50x.html:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f -H 'Host: blog.moorph.local' http://localhost:80/ || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
 
 volumes:
   minio-data:
