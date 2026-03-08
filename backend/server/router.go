@@ -6,12 +6,15 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func NewRouter() *gin.Engine {
+func NewRouter(app *App) *gin.Engine {
 	r := gin.Default()
 
 	api := r.Group("/api")
 	{
-		blog.RegisterRoutes(api)
+		blog.RegisterRoutes(api, blog.Handler{
+			Env:         app.Env,
+			MinioClient: app.MinioClient,
+		})
 	}
 
 	return r
