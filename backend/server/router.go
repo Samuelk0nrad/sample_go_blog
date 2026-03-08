@@ -1,6 +1,8 @@
 package server
 
 import (
+	"net/http"
+
 	"simple_blog_api/module/blog"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +18,10 @@ func NewRouter(app *App) *gin.Engine {
 			MinioClient: app.MinioClient,
 		})
 	}
+
+	r.GET("/health", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{"status": "ok"})
+	})
 
 	return r
 }

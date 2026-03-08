@@ -25,15 +25,13 @@ func RegisterRoutes(rg *gin.RouterGroup, handler Handler) {
 }
 
 func (h *Handler) getPosts(c *gin.Context) {
-	// posts := GetAllPosts()
-
 	reqParams := make(url.Values)
-	reqParams.Set("responce-content-disposition", `attachement; filename="TestOBJ"`)
+	reqParams.Set("response-content-disposition", `attachment; filename="TestOBJ.txt"`)
 
 	u, err := h.MinioClient.PresignedGetObject(
 		context.Background(),
 		h.Env.MinioBucket,
-		"TestOBJ",
+		"TestOBJ.txt",
 		15*time.Minute,
 		reqParams,
 	)
@@ -42,4 +40,5 @@ func (h *Handler) getPosts(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": u.String()})
+	// c.String(http.StatusOK, u.String())
 }
