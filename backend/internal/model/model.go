@@ -1,4 +1,4 @@
-package blog
+package model
 
 type BlogPost struct {
 	ID    int    `json:"id"`
