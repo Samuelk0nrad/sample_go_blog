@@ -60,16 +60,16 @@ services:
     volumes:
       - ./backend/:/app
       - /home/samuel/.local/share/mkcert/:/usr/local/share/ca-certificates
-    ports:
-      - "8080:8080"
+    # ports:
+      # - "8080:8080"
     networks:
       - internal
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:8080/health"]
       interval: 10s
       timeout: 3s
-      retries: 5
-      start_period: 15s
+      retries: 10
+      start_period: 30s
 
   #################
   ####  Proxy  ####
