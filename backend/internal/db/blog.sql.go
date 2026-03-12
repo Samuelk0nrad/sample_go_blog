@@ -10,42 +10,52 @@ import (
 )
 
 const getBlog = `-- name: GetBlog :one
-SELECT id, title, description, author FROM blog_metadata
+SELECT id, title, slug, description, author, created_by, created_at, updated_by, updated_at FROM blog_post
 WHERE id = $1
 LIMIT 1
 `
 
-func (q *Queries) GetBlog(ctx context.Context, id int32) (BlogMetadatum, error) {
+func (q *Queries) GetBlog(ctx context.Context, id int32) (BlogPost, error) {
 	row := q.db.QueryRow(ctx, getBlog, id)
-	var i BlogMetadatum
+	var i BlogPost
 	err := row.Scan(
 		&i.ID,
 		&i.Title,
+		&i.Slug,
 		&i.Description,
 		&i.Author,
+		&i.CreatedBy,
+		&i.CreatedAt,
+		&i.UpdatedBy,
+		&i.UpdatedAt,
 	)
 	return i, err
 }
 
 const listBlogs = `-- name: ListBlogs :many
-SELECT id, title, description, author FROM blog_metadata
+SELECT id, title, slug, description, author, created_by, created_at, updated_by, updated_at FROM blog_post
 order BY title
 `
 
-func (q *Queries) ListBlogs(ctx context.Context) ([]BlogMetadatum, error) {
+func (q *Queries) ListBlogs(ctx context.Context) ([]BlogPost, error) {
 	rows, err := q.db.Query(ctx, listBlogs)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []BlogMetadatum
+	var items []BlogPost
 	for rows.Next() {
-		var i BlogMetadatum
+		var i BlogPost
 		if err := rows.Scan(
 			&i.ID,
 			&i.Title,
+			&i.Slug,
 			&i.Description,
 			&i.Author,
+			&i.CreatedBy,
+			&i.CreatedAt,
+			&i.UpdatedBy,
+			&i.UpdatedAt,
 		); err != nil {
 			return nil, err
 		}

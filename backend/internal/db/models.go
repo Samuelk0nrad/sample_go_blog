@@ -8,9 +8,30 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type BlogMetadatum struct {
+type BlogPost struct {
 	ID          int32
-	Title       pgtype.Text
+	Title       string
+	Slug        string
 	Description pgtype.Text
-	Author      pgtype.Text
+	Author      string
+	CreatedBy   string
+	CreatedAt   pgtype.Timestamp
+	UpdatedBy   pgtype.Text
+	UpdatedAt   pgtype.Timestamp
+}
+
+type BlogTag struct {
+	TagID  int32
+	BlogID int32
+}
+
+type Tag struct {
+	ID          int32
+	Title       string
+	Slug        string
+	Description pgtype.Text
+	CreatedBy   string
+	CreatedAt   pgtype.Timestamp
+	UpdatedBy   pgtype.Text
+	UpdatedAt   pgtype.Timestamp
 }
